@@ -174,6 +174,8 @@ void setup()
  * get a reading from the mouse and report it back to the
  * host via the serial line.
  */
+
+int row = 0;
 void loop()
 {
     char mstat;
@@ -183,17 +185,24 @@ void loop()
     /* get a reading from the mouse */
     mouse_write(0xeb);  /* give me data! */
     mouse_read();      /* ignore ack */
-    mstat = mouse_read();
-    mx = mouse_read();
-    my = mouse_read();
+    mstat = mouse_read(); //buttons, don't care
+    mx = mouse_read(); //right wheel
+    my = mouse_read(); //left wheel, not hacked yet
+
+    int rowdelta = int(mx);
+    row += rowdelta;
+
+    //each transition = one unit :D
 
     /* send the data back up */
-    Serial.print(mstat, BIN);
-    Serial.print("\tX=");
-    Serial.print(mx, DEC);
-    Serial.print("\tY=");
-    Serial.print(my, DEC);
-    Serial.println();
+    if(rowdelta != 0) {
+        Serial.print(row);
+    //Serial.print("\tX=");
+    //Serial.print(mx, DEC);
+    //Serial.print("\tY=");
+    //Serial.print(my, DEC);
+        Serial.println();
+    }
     delay(20);  /* twiddle */
 }
 
